@@ -9,7 +9,6 @@ from scipy import stats
 
 def fun(grads, server) :
   n_clients = grads.shape[0]
-  #cosine_vals = smp.cosine_similarity(grads) - np.eye(n_clients)
   hdb = HDBSCAN(min_cluster_size = int(n_clients/2)+1)
   labels = hdb.fit_predict(grads, metric="cosine")
   entries = [grads[i] for i in labels if labels[i] == stats.mode(labels)]
