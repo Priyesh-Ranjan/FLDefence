@@ -98,3 +98,6 @@ class Client():
     #         self.test(self.dataLoader)
     def getDelta(self):
         return self.stateChange
+    
+    def getnewState(self):
+        return self.model.state_dict()

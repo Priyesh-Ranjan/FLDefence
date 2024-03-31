@@ -56,10 +56,6 @@ class Server():
         conf = np.zeros([10,10])
         with torch.no_grad():
             for data, target in self.dataLoader:
-                #target = torch.FloatTensor(target)
-                #target = F.one_hot(target, num_classes=2)
-                #target = target.type(torch.cuda.FloatTensor)
-                #target = target.unsqueeze(1)
                 data, target = data.to(self.device), target.to(self.device)
                 output = self.model(data)
                 test_loss += self.criterion(output, target, reduction='sum').item()  # sum up batch loss
@@ -67,8 +63,6 @@ class Server():
                     pred = torch.round(torch.sigmoid(output))
                 else:
                     pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-                    #target = target.argmax(dim=1, keepdim=True)
-                #pred = output
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 count += pred.shape[0]
                 conf += confusion_matrix(target.cpu(),pred.cpu(), labels = [i for i in range(10)])
@@ -178,10 +172,6 @@ class Server():
         vecs = [utils.net2vec(delta) for delta in deltas]
         vecs = [vec for vec in vecs if torch.isfinite(vec).all().item()]
         input = torch.stack(vecs, 1).unsqueeze(0)
-        #a = C(input,n)
-        #for i in range(len(deltas)) :
-        #    pd.DataFrame(deltas[i]).to_csv(str(self.savePath)+"Client_"+str(i)+"_Round_"+str(self.iter)+".csv",header = None, index = None)      
-        #print("Weights Saved")
         param_trainable = utils.getTrainableParameters(self.model)
 
         param_nontrainable = [param for param in Delta.keys() if param not in param_trainable]
@@ -208,8 +198,6 @@ class Server():
 
             torch.save(Delta, savepath)
             print(f'[Server] Update vectors have been saved to {savepath}')
-        #correlations = pd.read_csv("/content/drive/MyDrive/FL/corr.csv",header = None, sep = ",") 
-        #pd.DataFrame(correlations).to_csv(str(savepath)+"corr.csv", header = None, sep = ',', index = "None")
 
     ## Aggregation functions ##
 
@@ -347,7 +335,7 @@ class Server():
     def flame(self, clients) :
         from rules.flame import Net
         self.Net = Net
-        out = self.FedFuncWholeNet(clients, lambda arr: Net().cpu()(arr.cpu()))
+        out = self.FedFuncFLAME(clients, lambda arr: Net().cpu()(arr.cpu()))
         return out
 
     def FedFuncWholeNet(self, clients, func):
@@ -376,3 +364,14 @@ class Server():
 
         Delta.update(resultDelta)
         return Delta
+    
+    def FedFuncFLAME(self, clients, func):
+        Delta = deepcopy(self.emptyStates)
+        deltas = [c.getnewState() for c in clients]
+        vecs = [utils.net2vec(delta) for delta in deltas]
+        server_vec = utils.net2vec(self.model.state_dict())
+        vecs = [vec for vec in vecs if torch.isfinite(vec).all().item()]
+        result = func(torch.stack(vecs, 1).unsqueeze(0), server_vec)  # input as 1 by d by n
+        result = result.view(-1)
+        utils.vec2net(result, Delta)
+        return Delta        
