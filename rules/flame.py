@@ -3,13 +3,13 @@ import torch.nn as nn
 
 import numpy as np
 import sklearn.metrics.pairwise as smp
-from sklearn.cluster import HDBSCAN
+import hdbscan
 from scipy import stats
 
 
 def fun(grads, server) :
   n_clients = grads.shape[0]
-  hdb = HDBSCAN(min_cluster_size = int(n_clients/2)+1)
+  hdb = hdbscan.HDBSCAN(min_cluster_size = int(n_clients/2)+1)
   labels = hdb.fit_predict(grads, metric="cosine")
   entries = [grads[i] for i in labels if labels[i] == stats.mode(labels)]
   euclidean = smp.euclidean_distances(entries, server)
