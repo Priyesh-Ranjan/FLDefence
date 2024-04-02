@@ -335,7 +335,7 @@ class Server():
     def flame(self, clients) :
         from rules.flame import Net
         self.Net = Net
-        out = self.FedFuncFLAME(clients, lambda arr: Net().cpu()(arr.cpu()))
+        out = self.FedFuncFLAME(clients, Net)
         return out
 
     def FedFuncWholeNet(self, clients, func):
