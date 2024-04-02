@@ -9,8 +9,8 @@ from scipy import stats
 
 def fun(grads, server) :
   n_clients = grads.shape[0]
-  hdb = hdbscan.HDBSCAN(min_cluster_size = int(n_clients/2)+1)
-  labels = hdb.fit_predict(grads, metric="cosine")
+  hdb = hdbscan.HDBSCAN(min_cluster_size = int(n_clients/2)+1, metric="cosine")
+  labels = hdb.fit_predict(grads)
   entries = [grads[i] for i in labels if labels[i] == stats.mode(labels)]
   euclidean = smp.euclidean_distances(entries, server)
   median = np.median(euclidean)
