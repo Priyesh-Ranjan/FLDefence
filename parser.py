@@ -2,7 +2,7 @@ import argparse
 import json
 
 import numpy as np
-
+from utils.decide_attack import attack
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -21,15 +21,15 @@ def parse_args():
     parser.add_argument("--loader_type", type=str, choices=["iid", "byLabel", "dirichlet"], default="iid")
     parser.add_argument("--loader_path", type=str, default="./data/loader.pk", help="where to save the data partitions")
     parser.add_argument("--AR", type=str, )
-    parser.add_argument("--n_attacker_backdoor", type=int, default=0)
+    parser.add_argument("--n_attacker", type=int, default=0)
     parser.add_argument("--backdoor_trigger", nargs="*",  type=int, default=[0,0,1,1], help="the hyperparameter for backdoor trigger, do `--backdoor_trigger x_offset y_offset x_interval y_interval`")    
-    parser.add_argument("--n_attacker_semanticBackdoor", type=int, default=0)
-    parser.add_argument("--n_attacker_labelFlipping", type=int, default=0)
-    parser.add_argument("--n_attacker_labelFlippingDirectional", type=int, default=0)
-    parser.add_argument("--n_attacker_multilabelFlipping", type =int, default=0)
-    parser.add_argument("--n_attacker_omniscient", type=int, default=0)
+    #parser.add_argument("--n_attacker_semanticBackdoor", type=int, default=0)
+    #parser.add_argument("--n_attacker_labelFlipping", type=int, default=0)
+    #parser.add_argument("--n_attacker_labelFlippingDirectional", type=int, default=0)
+    #parser.add_argument("--n_attacker_multilabelFlipping", type =int, default=0)
+    #parser.add_argument("--n_attacker_omniscient", type=int, default=0)
     #parser.add_argument("--n_attacker_epochs", default = {(0,1,2) : [12,13,14], (3,4,5) : [14,16,19], (6,7,8) : [19,20,21], (9) : [28,29]})
-    parser.add_argument("--omniscient_scale", type=int, default=1)
+    #parser.add_argument("--omniscient_scale", type=int, default=1)
     parser.add_argument("--attacks", type=str, help="if contains \"backdoor\", activate the corresponding tests")
     parser.add_argument("--save_model_weights", action="store_true")
     parser.add_argument("--experiment_name", type=str)
@@ -41,9 +41,16 @@ def parse_args():
 
     n = args.num_clients
     
-    m_b = args.n_attacker_backdoor
-    #args.attacker_list_backdoor = np.random.permutation(list(range(n)))[:m]
-    args.attacker_list_backdoor = np.array([i for i in range(m_b)])
+    """if "DISTRIBUTED" in args.attacks.upper() :
+        N = args.n_attacker
+        args.attacker_list_distributed = np.array([i for i in range(N)])
+    elif "BACKDOOR" in args.attacks.upper() :
+        N = args.n_attacker
+        args.attacker_list_backdoor = np.array([i for i in range(N)])
+    elif "LABEL_FLIPPING" in args.attacks.upper() :
+        N = args.n_attacker
+        args.
+        
 
     m = args.n_attacker_semanticBackdoor
     args.attacker_list_semanticBackdoor = np.random.permutation(list(range(n)))[:m]
@@ -62,8 +69,9 @@ def parse_args():
     args.attacker_list_omniscient = np.random.permutation(list(range(n)))[:m]
 
     if args.experiment_name == None:
-        args.experiment_name = f"{args.loader_type}/{args.attacks}/{args.AR}"
-    
+        args.experiment_name = f"{args.loader_type}/{args.attacks}/{args.AR}"""
+        
+    args.attacker_list = attack(args)
     
     return args
 
