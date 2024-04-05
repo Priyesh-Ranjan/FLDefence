@@ -8,8 +8,6 @@ from tensorboardX import SummaryWriter
 from clients_attackers import *
 from server import Server
 
-#schedule = {(0,1,2) : [2,3,4], (3,4,5) : [4,6,9], (6,7,8) : [2,5,9], (9,) : [8,9]}
-
 def main(args):
     print('#####################')
     print('#####################')
@@ -25,7 +23,7 @@ def main(args):
 
     attacks = args.attacks
 
-    writer = SummaryWriter(f'./logs/{args.output_folder}/{args.experiment_name}')
+    writer = SummaryWriter(f'./logs/{args.experiment_name}')
 
     if args.dataset == 'mnist':
         from tasks import mnist

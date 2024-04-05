@@ -8,7 +8,7 @@ def attack(args):
     attacker_dictionary = {}
     if "BACKDOOR" in name :
         attacker_dictionary["backdoor"] = np.array([i for i in range(N)])
-        arr = name.split("BACKDOOR",1)[1].split(",")
+        arr = name.split("BACKDOOR",1)[1].split(";")
         pattern = []; target = []
         for ele in arr :
             if "->" in ele :
@@ -18,7 +18,7 @@ def attack(args):
         attacker_dictionary["backdoor_target"] = target        
     elif "LABEL" in name or "FLIPPING" in name :
         attacker_dictionary["label_flipping"] = np.array([i for i in range(N)])
-        arr = name.split("FLIPPING",1)[1].split(",")
+        arr = name.split("FLIPPING",1)[1].split(";")
         source = []; destination = []
         for ele in arr :
             if "->" in ele :
@@ -27,10 +27,10 @@ def attack(args):
         attacker_dictionary["label_flipping_sources"] = source
         attacker_dictionary["label_flipping_destinations"] = destination        
     if "PROBABILISTIC" in name :
-        prob = name.split("PROBABILISTIC",1)[1].split(",")[0]
+        prob = name.split("PROBABILISTIC",1)[1].split(";")[0]
         attacker_dictionary["attack_rounds"] = np.array([0 if random.random() < float(prob) else 1 for i in range(E)])
     if "DELAYED" in name :
-        epoch = name.split("DELAYED",1)[1].split(",")[0]
+        epoch = name.split("DELAYED",1)[1].split(";")[0]
         attacker_dictionary["attack_rounds"] = np.array([0 if i < int(epoch) else 1 for i in range(E)])
     if "ON-OFF" in name :
         attacker_dictionary["strategy"] = "ON-OFF"
