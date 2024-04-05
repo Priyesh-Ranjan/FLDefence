@@ -7,7 +7,8 @@ def attack(args):
     E = args.epochs
     attacker_dictionary = {}
     if "BACKDOOR" in name :
-        attacker_dictionary["backdoor"] = np.array([i for i in range(N)])
+        n_backdoor  = name.split("BACKDOOR",1)[1].split(" ")[0]
+        attacker_dictionary["backdoor"] = np.array([i for i in range(n_backdoor)])
         arr = name.split("BACKDOOR",1)[1].split(";")
         pattern = []; target = []
         for ele in arr :

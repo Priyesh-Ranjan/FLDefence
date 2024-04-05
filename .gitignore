@@ -3,6 +3,8 @@
 __pycache__/*
 utils/__pycache__/*
 __pycache__/*
+tasks/__pycache__/*
+rules/__pycache__/*
 logs/*
 data/*
 ```
