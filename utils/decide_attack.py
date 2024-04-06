@@ -1,11 +1,40 @@
 import numpy as np
 import random
 
-def attack(args):
-    name = args.attacks.upper()
-    N = args.n_attacker
-    E = args.epochs
-    attacker_dictionary = {}
+def attack(config, E):
+    types = config["Type"]
+    scale = config["scale"]
+    duration = config["duration"]
+    strength = config["strength"]
+    strategy = config["strategy"]
+    
+    attacker_num = scale
+    attack_rounds = duration
+    
+    if "LABEL" in types.upper() :
+        attacks = 'L'
+    elif "BACKDOOR" in types.upper() :
+        attacks = 'B'
+    
+    if len(strength) == 2 :
+        scaling = int(strength[0])
+        nature = strength[1]
+    else :
+        scaling = 1
+        nature = strength[0]
+        
+    if attacks == 'L' :
+        for ele 
+    elif attacks == 'B' :
+        
+    
+    if strategy[0].upper() == "PROB" :
+        prob = strategy[1]
+        attack_rounds = np.array([0 if random.random() < float(prob) else 1 for i in range(E)])
+    
+    return attacker_num, attack_rounds, attacks, scaling
+    
+    """
     if "BACKDOOR" in name :
         n_backdoor  = name.split("BACKDOOR",1)[1].split(" ")[0]
         attacker_dictionary["backdoor"] = np.array([i for i in range(n_backdoor)])
@@ -39,4 +68,4 @@ def attack(args):
         attacker_dictionary["strategy"] = "RAMP"
     print("The attack parameters are:\n")
     print(attacker_dictionary)    
-    return attacker_dictionary
+    return attacker_dictionary"""

@@ -21,8 +21,8 @@ def parse_args():
     parser.add_argument("--loader_type", type=str, choices=["iid", "byLabel", "dirichlet"], default="iid")
     parser.add_argument("--loader_path", type=str, default="./data/loader.pk", help="where to save the data partitions")
     parser.add_argument("--AR", type=str, )
-    parser.add_argument("--n_attacker", type=int, default=0)
-    parser.add_argument("--backdoor_trigger", nargs="*",  type=int, default=[0,0,1,1], help="the hyperparameter for backdoor trigger, do `--backdoor_trigger x_offset y_offset x_interval y_interval`")    
+    #parser.add_argument("--n_attacker", type=int, default=0)
+    #parser.add_argument("--backdoor_trigger", nargs="*",  type=int, default=[0,0,1,1], help="the hyperparameter for backdoor trigger, do `--backdoor_trigger x_offset y_offset x_interval y_interval`")    
     #parser.add_argument("--n_attacker_semanticBackdoor", type=int, default=0)
     #parser.add_argument("--n_attacker_labelFlipping", type=int, default=0)
     #parser.add_argument("--n_attacker_labelFlippingDirectional", type=int, default=0)
@@ -30,7 +30,7 @@ def parse_args():
     #parser.add_argument("--n_attacker_omniscient", type=int, default=0)
     #parser.add_argument("--n_attacker_epochs", default = {(0,1,2) : [12,13,14], (3,4,5) : [14,16,19], (6,7,8) : [19,20,21], (9) : [28,29]})
     #parser.add_argument("--omniscient_scale", type=int, default=1)
-    parser.add_argument("--attacks", type=str, help="if contains \"backdoor\", activate the corresponding tests")
+    parser.add_argument("--attacks", type=dict)
     parser.add_argument("--save_model_weights", action="store_true")
     parser.add_argument("--experiment_name", type=str)
     parser.add_argument("--path_to_aggNet", type=str)
@@ -71,7 +71,7 @@ def parse_args():
     if args.experiment_name == None:
         args.experiment_name = f"{args.loader_type}/{args.attacks}/{args.AR}"""
         
-    args.attacker_list = attack(args)
+    args.attacker_list = attack(args.attacks, args.epochs)
     
     return args
 
