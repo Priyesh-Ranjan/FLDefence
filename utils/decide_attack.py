@@ -24,15 +24,17 @@ def attack(config, E):
         nature = strength[0]
         
     if attacks == 'L' :
-        for ele 
+        sources = [i.strip() for i in nature.split("->")[0].split(",")]
+        targets = [i.strip() for i in nature.split("->")[1].split(",")]
     elif attacks == 'B' :
-        
+        sources = [i.strip() for i in nature.split("->")[0].split(",")]
+        targets = [i.strip() for i in nature.split("->")[1].split(",")]
     
     if strategy[0].upper() == "PROB" :
         prob = strategy[1]
         attack_rounds = np.array([0 if random.random() < float(prob) else 1 for i in range(E)])
     
-    return attacker_num, attack_rounds, attacks, scaling
+    return attacker_num, attack_rounds, attacks, scaling, sources, targets
     
     """
     if "BACKDOOR" in name :
