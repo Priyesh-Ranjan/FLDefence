@@ -4,9 +4,9 @@ import random
 def attack(config, E):
     types = config["Type"]
     scale = config["scale"]
-    duration = config["duration"]
-    strength = config["strength"]
-    strategy = config["strategy"]
+    duration = config["time"]
+    strength = config["power"]
+    strategy = config["strat"]
     
     attacker_num = scale
     attack_rounds = duration
