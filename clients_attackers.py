@@ -8,58 +8,58 @@ from utils import utils
 from utils.backdoor_semantic_utils import SemanticBackdoor_Utils
 from utils.backdoor_utils import Backdoor_Utils
 from clients import *
+from random import random
 
-
-class Attacker_LabelFlipping1to7(Client):
-    def __init__(self, cid, ctype, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
-        super(Attacker_LabelFlipping1to7, self).__init__(cid, ctype, model, dataLoader, optimizer, criterion, device,
+class Attacker_LF(Client):
+    def __init__(self, cid, PDR, scaling, interval, flip, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
+        super(Attacker_LF, self).__init__(cid, model, dataLoader, optimizer, criterion, device,
                                                          inner_epochs)
+        self.PDR = PDR
+        self.scaling = scaling
+        self.interval = interval
+        self.flip = flip
 
-    def data_transform(self, data, target):
-        target_ = torch.tensor(list(map(lambda x: 7 if x == 1 else x, target)))
-        assert target.shape == target_.shape, "Inconsistent target shape"
-        return data, target_
-
-
-class Attacker_LabelFlipping01swap(Client):
-    def __init__(self, cid, ctype, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
-        super(Attacker_LabelFlipping01swap, self).__init__(cid, ctype, model, dataLoader, optimizer, criterion, device,
-                                                           inner_epochs)
-
-    def data_transform(self, data, target):
-        target_ = torch.tensor(list(map(lambda x: 1 - x if x in [0, 1] else x, target)))
-        assert target.shape == target_.shape, "Inconsistent target shape"
-        return data, target_
+    def data_transform(self, data, target, epoch):
         
-
-class Attacker_LabelFlipping59to71(Client):
-    def __init__(self, cid, ctype, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
-        super(Attacker_LabelFlipping59to71, self).__init__(cid, ctype, model, dataLoader, optimizer, criterion, device,
-                                                           inner_epochs)
-
-    def data_transform(self, data, target):
-        target_ = torch.tensor(list(map(lambda x: 7 if x == 5 else (1 if x == 9 else x), target)))
-        assert target.shape == target_.shape, "Inconsistent target shape"
-        return data, target_        
-
-
-class Attacker_Backdoor(Client):
-    def __init__(self, cid, ctype, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
-        super(Attacker_Backdoor, self).__init__(cid, ctype, model, dataLoader, optimizer, criterion, device, inner_epochs)
-        self.utils = Backdoor_Utils()
-
-    def data_transform(self, data, target, part):
-        data, target = self.utils.get_poison_batch(data, target, part, backdoor_fraction=0.2,
-                                                   backdoor_label=self.utils.backdoor_label)
-        return data, target
+        if epoch in self.interval:
+            target_ = torch.tensor(list(map(lambda x: self.flip[str(x)] if (str(x) in self.flip.keys() and random() <= self.PDR) else x, target)))
+            assert target.shape == target_.shape, "Inconsistent target shape"
+        else : 
+            target_ = target
+        return data, target_
     
-    def backdoor_scaling(self):
-        
+    def scaling(self):
         newState = self.model.state_dict()
         
         for param in newState:
-            newState[param] = 6*(newState[param] - self.originalState[param]) + self.originalState[param]
-            #print("Attack")
+            newState[param] = self.scaling*(newState[param] - self.originalState[param]) + self.originalState[param]
+            
+        self.model.load_state_dict(deepcopy(newState))    
+
+
+class Attacker_Centralized_Backdoor(Client):
+    def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
+        super(Attacker_Centralized_Backdoor, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
+        self.utils = Backdoor_Utils()
+        self.PDR = PDR
+        self.scaling = scaling
+        self.interval = interval
+        self.magnitude = magnitude
+        self.pattern = pattern
+        self.transform = transform
+
+    def data_transform(self, data, target, epoch):
+        if epoch in self.interval:
+            data, target = self.utils.get_poison_batch(data, target, backdoor_fraction=self.PDR,
+                                                   backdoor_label=self.utils.backdoor_label,
+                                                   pattern=self.pattern, transform=self.transform)
+        return data, target
+    
+    def scaling(self):
+        newState = self.model.state_dict()
+        
+        for param in newState:
+            newState[param] = self.scaling*(newState[param] - self.originalState[param]) + self.originalState[param]
             
         self.model.load_state_dict(deepcopy(newState))    
 

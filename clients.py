@@ -7,19 +7,17 @@ import torch.nn.functional as F
 import random
 
 class Client():
-    def __init__(self, cid, ctype, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
+    def __init__(self, cid, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
         self.cid = cid
-        self.ctype = ctype
         self.model = model
         self.dataLoader = dataLoader
         self.optimizer = optimizer
         self.device = device
-        self.log_interval = len(dataLoader) - 1
         self.init_stateChange()
         self.originalState = deepcopy(model.state_dict())
         self.isTrained = False
         self.inner_epochs = inner_epochs
-        self.criterion = criterion
+        self.criterion = criterion        
 
     def init_stateChange(self):
         states = deepcopy(self.model.state_dict())

@@ -2,7 +2,7 @@ import argparse
 import json
 
 import numpy as np
-from utils.decide_attack import attack
+#from utils.decide_attack import attack
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -13,43 +13,26 @@ def parse_args():
     parser.add_argument("--lr", type=float, default=0.01, help="Learning rate of models")
     parser.add_argument("--momentum", type=float, default=0.5)
     parser.add_argument("--seed", type=int, default=1)
-    #parser.add_argument("--log_interval", type=int, default=11)
-    parser.add_argument("-n--num_clients", type=int, default=10)
+    parser.add_argument("--num_clients", type=int, default=10)
     parser.add_argument("--scale",type=int, default=10)
-    #parser.add_argument("--output_folder", type=str, default="experiments",
-                        #help="path to output folder, e.g. \"experiment\"")
     parser.add_argument("--dataset", type=str, choices=["mnist", "cifar", "cifar100", "fmnist"], default="mnist")
     parser.add_argument("--loader_type", type=str, choices=["iid", "byLabel", "dirichlet"], default="iid")
-    #parser.add_argument("--loader_path", type=str, default="./data/loader.pk", help="where to save the data partitions")
-    parser.add_argument("--AR", type=str, )
+    parser.add_argument("--AR", type=str, default="fedavg")
+    parser.add_argument("--type", type=str, choices=["LF","BD"])
     parser.add_argument("--PDR",type=float,default=0.2)
     parser.add_argument("--scaling",type=float,default=1)
     parser.add_argument("--magnitude", nargs='?', type=float, default=1)
     parser.add_argument("--start", nargs='?', type=int, default=0)
     parser.add_argument("--end", nargs='?', type=int, default=None)
-    #parser.add_argument("--n_attacker", type=int, default=0)
-    #parser.add_argument("--backdoor_trigger", nargs="*",  type=int, default=[0,0,1,1], help="the hyperparameter for backdoor trigger, do `--backdoor_trigger x_offset y_offset x_interval y_interval`")    
-    #parser.add_argument("--n_attacker_semanticBackdoor", type=int, default=0)
-    #parser.add_argument("--n_attacker_labelFlipping", type=int, default=0)
-    #parser.add_argument("--n_attacker_labelFlippingDirectional", type=int, default=0)
-    #parser.add_argument("--n_attacker_multilabelFlipping", type =int, default=0)
-    #parser.add_argument("--n_attacker_omniscient", type=int, default=0)
-    #parser.add_argument("--n_attacker_epochs", default = {(0,1,2) : [12,13,14], (3,4,5) : [14,16,19], (6,7,8) : [19,20,21], (9) : [28,29]})
-    #parser.add_argument("--omniscient_scale", type=int, default=1)
-    #parser.add_argument("--attacks", type=dict)
-    #parser.add_argument("--save_model_weights", action="store_true")
     parser.add_argument("--attack", type=str)
     parser.add_argument("--backdoor",nargs='?',type=str,choices=["central","intra","inter"], default="central")
     parser.add_argument("--label_flipping",nargs='?',type=str,choices=["uni","bi"], default="bi")
     parser.add_argument("--pattern",nargs='?',type=str,default=None)
     parser.add_argument("--experiment_name", type=str)
-    #parser.add_argument("--path_to_aggNet", type=str)
     parser.add_argument("--device", type=str, choices=["cuda", "cpu"], default='cuda')
     parser.add_argument("--inner_epochs", type=int, default=1)
 
     args = parser.parse_args()
-
-    n = args.num_clients
     
     """if "DISTRIBUTED" in args.attacks.upper() :
         N = args.n_attacker
@@ -80,9 +63,7 @@ def parse_args():
 
     if args.experiment_name == None:
         args.experiment_name = f"{args.loader_type}/{args.attacks}/{args.AR}"""
-        
-    args.attacker_list = attack(args.attacks, args.epochs)
-    
+            
     return args
 
 
