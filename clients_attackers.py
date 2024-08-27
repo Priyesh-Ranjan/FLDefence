@@ -38,8 +38,36 @@ class Attacker_LF(Client):
 
 
 class Attacker_Centralized_Backdoor(Client):
-    def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
+    def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, label, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
         super(Attacker_Centralized_Backdoor, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
+        self.utils = Backdoor_Utils()
+        self.PDR = PDR
+        self.scaling = scaling
+        self.interval = interval
+        self.magnitude = magnitude
+        self.pattern = pattern
+        self.transform = transform
+        self.backdoor_label = label
+
+    def data_transform(self, data, target, epoch):
+        if epoch in self.interval:
+            data, target = self.utils.get_poison_batch(data, target, backdoor_fraction=self.PDR,
+                                                   backdoor_label=self.backdoor_label,
+                                                   pattern=self.pattern, transform=self.transform, magnitude=self.magnitude)
+        return data, target
+    
+    def scaling(self):
+        newState = self.model.state_dict()
+        
+        for param in newState:
+            newState[param] = self.scaling*(newState[param] - self.originalState[param]) + self.originalState[param]
+            
+        self.model.load_state_dict(deepcopy(newState))    
+        
+        
+class Attacker_Distributed_Backdoor(Client):
+    def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
+        super(Attacker_Distributed_Backdoor, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
         self.utils = Backdoor_Utils()
         self.PDR = PDR
         self.scaling = scaling
@@ -61,7 +89,7 @@ class Attacker_Centralized_Backdoor(Client):
         for param in newState:
             newState[param] = self.scaling*(newState[param] - self.originalState[param]) + self.originalState[param]
             
-        self.model.load_state_dict(deepcopy(newState))    
+        self.model.load_state_dict(deepcopy(newState))            
 
 class Attacker_SemanticBackdoor(Client):
     '''

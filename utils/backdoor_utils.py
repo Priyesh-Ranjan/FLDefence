@@ -4,48 +4,64 @@ import torch
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np  
+import random
+
+def transform(pattern, transform) :
+    
+    if 'S' in transform :
+        trigger = random.uniform(1, 2)*np.array(pattern)
+    if 'T' in transform :
+        trigger = random.randint(0, 27) + np.array(pattern)
+    if 'R' in transform :
+        trigger = pattern
+    else :
+        trigger = pattern
+    return trigger
+
+def add_pattern(pattern, transform):
+    if pattern == "square" :
+        trigger = [[0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 0, 3], [0, 0, 4], 
+                   [0, 4, 0], [0, 4, 1], [0, 4, 2], [0, 4, 3], [0, 4, 4], 
+                   [0, 1, 0], [0, 2, 0], [0, 3, 0], [0, 1, 4], [0, 2, 4], [0, 3, 4], ] 
+    elif pattern == "hash" :
+        trigger = [[0, 0, 1], [0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1], 
+                   [0, 0, 3], [0, 1, 3], [0, 2, 3], [0, 3, 3], [0, 4, 3], 
+                   [0, 1, 0], [0, 1, 1], [0, 1, 2], [0, 1, 3], [0, 1, 4], 
+                   [0, 3, 0], [0, 3, 1], [0, 3, 2], [0, 3, 3], [0, 3, 4], ]
+    elif pattern == "cross" :
+        trigger = [[0, 4, 4], [0, 3, 3], [0, 2, 2], [0, 1, 1], [0, 0, 0], 
+                   [0, 2, 2], [0, 1, 3], [0, 0, 4], [0, 3, 1], [0, 4, 0], ]
+    elif pattern == "plus" :
+        trigger = [[0, 2, 0], [0, 2, 1], [0, 2, 2], [0, 2, 3], [0, 2, 4], 
+                   [0, 0, 2], [0, 1, 2], [0, 2, 2], [0, 3, 2], [0, 4, 2], ]
+    elif pattern == "equal" :
+        trigger = [[0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 0, 3], [0, 0, 4], 
+                   [0, 4, 0], [0, 4, 1], [0, 4, 2], [0, 4, 3], [0, 4, 4], ]
+    elif pattern == "parallel" :
+        trigger = [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, 3, 0], [0, 4, 0], 
+                   [0, 0, 4], [0, 1, 4], [0, 2, 4], [0, 3, 4], [0, 4, 4], ]
+    return transform(trigger, transform) 
 
 class Backdoor_Utils():
 
-    def __init__(self):
-        self.backdoor_label = 8
-        self.trigger_value = 1
-
-    def get_poison_batch(self, data, targets, part, backdoor_fraction, backdoor_label, evaluation=False):
+    def get_poison_batch(self, data, targets, backdoor_fraction,
+                                           backdoor_label, pattern, transform, magnitude):
         new_data = torch.empty(data.shape)
         new_targets = torch.empty(targets.shape)
 
         for index in range(0, len(data)):
-            if evaluation:  # will poison all batch data when testing
-                new_targets[index] = backdoor_label
-                new_data[index] = self.add_backdoor_pixels(data[index], evaluation, part)
-
-            else:  # will poison only a fraction of data when training
-                if torch.rand(1) < backdoor_fraction and part >= 0 :
+                if torch.rand(1) < backdoor_fraction :
                         new_targets[index] = backdoor_label
-                        new_data[index] = self.add_backdoor_pixels(data[index], evaluation, part)
+                        new_data[index] = self.add_backdoor_pixels(data[index], pattern, transform, magnitude)
                 else:
                     new_data[index] = data[index]
                     new_targets[index] = targets[index]
 
         new_targets = new_targets.long()
-        if evaluation:
-            new_data.requires_grad_(False)
-            new_targets.requires_grad_(False)
         return new_data, new_targets
 
-    def setRandomTrigger(self,k=6,seed=None):
-        if seed==0:
-            return
-        self.trigger_position=getRandomPattern(k,seed)
-
-    def add_backdoor_pixels(self, item, evaluation, part):
-        pos = getNonPersistantPattern(evaluation, part)
+    def add_backdoor_pixels(self, item, pattern, transform, magnitude):
+        pos = add_pattern(pattern, transform)
         for p in pos:
-        #for i in range(0, 12):
-            #pos = self.trigger_position[i]
-                item[p[0]][p[1]][p[2]] = 1
+                item[p[0]][p[1]][p[2]] = 1*magnitude
         return item
-    
-    def setTrigger(self,x_offset,y_offset,x_interval,y_interval):
-        self.trigger_position=getDifferentPattern(x_offset,y_offset,x_interval,y_interval)
