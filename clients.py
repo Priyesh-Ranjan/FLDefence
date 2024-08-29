@@ -30,24 +30,18 @@ class Client():
         self.originalState = deepcopy(states)
         self.model.zero_grad()
 
-    def data_transform(self, data, target):
+    def data_transform(self, data, target, epoch):
         return data, target
+    
+    def scaling(self):
+        pass
 
     def train(self, epoch):
         self.model.to(self.device)
         self.model.train()
-        rand = random.random()
-        #part = random.sample(range(2),1)[0] int(epoch%4)
         for e in range(self.inner_epochs):
             for batch_idx, (data, target) in enumerate(self.dataLoader):
-                if self.ctype == "B": 
-                    if epoch >= 5 :
-                    #if int(epoch) == 14 :
-                        data, target = self.data_transform(data, target, int(self.cid%6))
-                    else :
-                        data, target = self.data_transform(data, target, -1)
-                else :
-                    data, target = self.data_transform(data, target)
+                data, target = self.data_transform(data, target, epoch)
                 #target = F.one_hot(target, num_classes=2)
                 #target = target.type(torch.cuda.FloatTensor)    
                 data, target = data.to(self.device), target.to(self.device)
@@ -60,9 +54,7 @@ class Client():
         
         self.isTrained = True
         self.model.cpu()  ## avoid occupying gpu when idle
-        
-        if self.ctype == "B" and epoch>=5 :
-            self.backdoor_scaling()
+        self.scaling()
 
     def test(self, testDataLoader):
         self.model.to(self.device)

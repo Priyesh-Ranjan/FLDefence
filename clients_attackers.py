@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from copy import deepcopy
 
 from utils import utils
-from utils.backdoor_semantic_utils import SemanticBackdoor_Utils
+#from utils.backdoor_semantic_utils import SemanticBackdoor_Utils
 from utils.backdoor_utils import Backdoor_Utils
 from clients import *
 from random import random
@@ -36,10 +36,9 @@ class Attacker_LF(Client):
             
         self.model.load_state_dict(deepcopy(newState))    
 
-
-class Attacker_Centralized_Backdoor(Client):
+class Attacker_Backdoor(Client):
     def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, label, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
-        super(Attacker_Centralized_Backdoor, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
+        super(Attacker_Backdoor, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
         self.utils = Backdoor_Utils()
         self.PDR = PDR
         self.scaling = scaling
@@ -51,7 +50,7 @@ class Attacker_Centralized_Backdoor(Client):
 
     def data_transform(self, data, target, epoch):
         if epoch in self.interval:
-            data, target = self.utils.get_poison_batch(data, target, backdoor_fraction=self.PDR,
+            data, target = self.utils.Backdoor_Samples(data, target, backdoor_fraction=self.PDR,
                                                    backdoor_label=self.backdoor_label,
                                                    pattern=self.pattern, transform=self.transform, magnitude=self.magnitude)
         return data, target
@@ -62,12 +61,14 @@ class Attacker_Centralized_Backdoor(Client):
         for param in newState:
             newState[param] = self.scaling*(newState[param] - self.originalState[param]) + self.originalState[param]
             
-        self.model.load_state_dict(deepcopy(newState))    
+        self.model.load_state_dict(deepcopy(newState)) 
         
-        
-class Attacker_Distributed_Backdoor(Client):
-    def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
-        super(Attacker_Distributed_Backdoor, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
+    def return_params(self) :
+        return self.pattern, self.backdoor_label    
+"""        
+class Attacker_DB(Client):
+    def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, label, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
+        super(Attacker_DB, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
         self.utils = Backdoor_Utils()
         self.PDR = PDR
         self.scaling = scaling
@@ -75,11 +76,12 @@ class Attacker_Distributed_Backdoor(Client):
         self.magnitude = magnitude
         self.pattern = pattern
         self.transform = transform
+        self.backdoor_label = label
 
     def data_transform(self, data, target, epoch):
         if epoch in self.interval:
-            data, target = self.utils.get_poison_batch(data, target, backdoor_fraction=self.PDR,
-                                                   backdoor_label=self.utils.backdoor_label,
+            data, target = self.utils.Training_Backdoor(data, target, backdoor_fraction=self.PDR,
+                                                   backdoor_label=self.backdoor_label,
                                                    pattern=self.pattern, transform=self.transform)
         return data, target
     
@@ -89,16 +91,12 @@ class Attacker_Distributed_Backdoor(Client):
         for param in newState:
             newState[param] = self.scaling*(newState[param] - self.originalState[param]) + self.originalState[param]
             
-        self.model.load_state_dict(deepcopy(newState))            
+        self.model.load_state_dict(deepcopy(newState))  
+    
+    def return_params(self) :
+        return self.pattern, self.label          
 
 class Attacker_SemanticBackdoor(Client):
-    '''
-    suggested by 'How to backdoor Federated Learning' 
-    https://arxiv.org/pdf/1807.00459.pdf
-    
-    For each batch, 20 out of 64 samples (in the original paper) are replaced with semantic backdoor, this implementation replaces on average a 30% of the batch by the semantic backdoor
-    
-    '''
 
     def __init__(self, cid, ctype, model, dataLoader, optimizer, criterion=F.cross_entropy, device='cpu', inner_epochs=1):
         super(Attacker_SemanticBackdoor, self).__init__(cid, ctype, model, dataLoader, optimizer, criterion, device,
@@ -137,24 +135,4 @@ class Attacker_SemanticBackdoor(Client):
     def update(self):
         super().update()
         self.testBackdoor()
-
-
-class Attacker_Omniscient(Client):
-    def __init__(self, cid, ctype, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', scale=1, inner_epochs=1):
-        super(Attacker_Omniscient, self).__init__(cid, ctype, model, dataLoader, optimizer, criterion, device, inner_epochs)
-        self.scale = scale
-
-    def update(self):
-        assert self.isTrained, 'nothing to update, call train() to obtain gradients'
-        newState = self.model.state_dict()
-        for param in self.originalState:
-
-            self.stateChange[param] = newState[param] - self.originalState[param]
-
-            trainable_parameter = utils.getTrainableParameters(self.model)
-            if param not in trainable_parameter:
-                continue
-            #             if not "FloatTensor" in self.originalState[param].type():
-            #                 continue
-            self.stateChange[param] *= (-self.scale)
-        self.isTrained = False
+"""

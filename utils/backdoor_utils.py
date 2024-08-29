@@ -6,7 +6,7 @@ import matplotlib.cm as cm
 import numpy as np  
 import random
 
-def transform(pattern, transform) :
+def transform(pattern, transform=None) :
     
     if 'S' in transform :
         trigger = random.uniform(1, 2)*np.array(pattern)
@@ -18,7 +18,7 @@ def transform(pattern, transform) :
         trigger = pattern
     return trigger
 
-def add_pattern(pattern, transform):
+def add_pattern(pattern, transform=None):
     if pattern == "square" :
         trigger = [[0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 0, 3], [0, 0, 4], 
                    [0, 4, 0], [0, 4, 1], [0, 4, 2], [0, 4, 3], [0, 4, 4], 
@@ -44,8 +44,8 @@ def add_pattern(pattern, transform):
 
 class Backdoor_Utils():
 
-    def get_poison_batch(self, data, targets, backdoor_fraction,
-                                           backdoor_label, pattern, transform, magnitude):
+    def Backdoor_Samples(self, data, targets, backdoor_fraction,
+                                           backdoor_label, pattern, transform=None, magnitude=1):
         new_data = torch.empty(data.shape)
         new_targets = torch.empty(targets.shape)
 
@@ -60,7 +60,7 @@ class Backdoor_Utils():
         new_targets = new_targets.long()
         return new_data, new_targets
 
-    def add_backdoor_pixels(self, item, pattern, transform, magnitude):
+    def add_backdoor_pixels(self, item, pattern, transform=None, magnitude=1):
         pos = add_pattern(pattern, transform)
         for p in pos:
                 item[p[0]][p[1]][p[2]] = 1*magnitude

@@ -10,13 +10,14 @@ import torch.nn.functional as F
 import numpy as np
 
 from utils import utils
-from utils.backdoor_semantic_utils import SemanticBackdoor_Utils
+#from utils.backdoor_semantic_utils import SemanticBackdoor_Utils
 from utils.backdoor_utils import Backdoor_Utils
 import time
 
 class Server():
     def __init__(self, model, dataLoader, criterion=F.nll_loss, device='cpu'):
         self.clients = []
+        self.c_labels = []
         self.model = model
         self.dataLoader = dataLoader
         self.device = device
@@ -30,6 +31,8 @@ class Server():
         self.savePath = './AggData'
         self.criterion = criterion
         self.path_to_aggNet = ""
+        self.patterns = []
+        self.label = None
 
     def init_stateChange(self):
         states = deepcopy(self.model.state_dict())
@@ -40,9 +43,20 @@ class Server():
     def attach(self, c):
         self.clients.append(c)
 
+    def backdoor_testing(self):
+        for i,c in enumerate(self.clients) :
+            if self.c_labels[i] == 'B' :
+                pattern, label = c.return_params()
+                self.patterns.append(pattern)
+        self.patterns = set(self.patterns)     
+        self.label = label
+
     def distribute(self):
         for c in self.clients:
             c.setModelParameter(self.model.state_dict())
+            
+    def set_clabels(self, labels):
+        self.c_labels = labels        
 
     def test(self):
         print("[Server] Start testing")
@@ -88,8 +102,8 @@ class Server():
         utils = Backdoor_Utils()
         with torch.no_grad():
             for data, target in self.dataLoader:
-                data, new_target = utils.get_poison_batch(data, target, part = 4, backdoor_fraction=1,
-                                                      backdoor_label=utils.backdoor_label, evaluation=True)
+                data, new_target = utils.Backdoor_Samples(data, target, backdoor_fraction = 1,
+                                                      backdoor_label=self.label, pattern = self.patterns)
                 data, new_target, target = data.to(self.device), new_target.to(self.device), target.to(self.device)
                 output = self.model(data)
                 test_loss += self.criterion(output, new_target, reduction='sum').item()
@@ -114,7 +128,7 @@ class Server():
         print('[Server] Test set (Backdoored): Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(good_loss, acc, len(self.dataLoader.dataset), good))
                                                                                                     
         return test_loss, accuracy
-
+    """
     def test_semanticBackdoor(self):
         print("[Server] Start testing semantic backdoor")
 
@@ -143,12 +157,12 @@ class Server():
                                                                                                              len(
                                                                                                                  self.dataLoader.dataset),
                                                                                                              accuracy))
-        return test_loss, accuracy, data, pred
+        return test_loss, accuracy, data, pred"""
 
-    def train(self, group, epoch):
+    def train(self, group):
         selectedClients = [self.clients[i] for i in group]
         for c in selectedClients:
-            c.train(epoch)
+            c.train(self.iter)
             c.update()
 
         if self.isSaveChanges:

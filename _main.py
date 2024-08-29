@@ -68,16 +68,20 @@ def main(args):
         optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     client_list, labels = adversary_setup(model, trainData, optimizer, criterion, device, args.inner_epochs)
-
+    for c in client_list :
+        server.attach(c)
+    server.set_clabels(labels)
+    
     loss, accuracy = server.test()
     steps = 0
     writer.add_scalar('test/loss', loss, steps)
     writer.add_scalar('test/accuracy', accuracy, steps)
 
-    if 'BACKDOOR' in args.attacks.upper():
+    if 'BD' in args.type.upper():
         if 'SEMANTIC' in args.attacks.upper():
             loss, accuracy, bdata, bpred = server.test_semanticBackdoor()
         else:
+            server.backdoor_testing()
             loss, accuracy = server.test_backdoor()
 
         writer.add_scalar('test/loss_backdoor', loss, steps)
@@ -91,7 +95,7 @@ def main(args):
         server.distribute()
         #         group=Random().sample(range(5),1)
         group = range(args.num_clients)
-        server.train(group, j)
+        server.train(group)
         #         server.train_concurrent(group)
 
         loss, accuracy = server.test()
@@ -99,7 +103,7 @@ def main(args):
         writer.add_scalar('test/loss', loss, steps)
         writer.add_scalar('test/accuracy', accuracy, steps)
 
-        if 'BACKDOOR' in args.attacks.upper():
+        if 'BD' in args.type.upper():
             if 'SEMANTIC' in args.attacks.upper():
                 loss, accuracy, bdata, bpred = server.test_semanticBackdoor()
             else:
