@@ -54,7 +54,7 @@ class Backdoor_Utils():
                 if torch.rand(1) < backdoor_fraction :
                         new_targets[index] = backdoor_label
                         if type(pattern) == list :
-                            trigger = pattern[random.randint(0,len(pattern))]
+                            trigger = pattern[random.randint(0,len(pattern)-1)]
                             new_data[index] = self.add_backdoor_pixels(data[index], trigger, transform, magnitude)
                         else :
                             new_data[index] = self.add_backdoor_pixels(data[index], pattern, transform, magnitude)
