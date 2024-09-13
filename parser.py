@@ -42,11 +42,6 @@ def parse_args():
         args.attacker_list_backdoor = np.array([i for i in range(N)])
     elif "LABEL_FLIPPING" in args.attacks.upper() :
         N = args.n_attacker
-        args.
-        
-
-    m = args.n_attacker_semanticBackdoor
-    args.attacker_list_semanticBackdoor = np.random.permutation(list(range(n)))[:m]
 
     m_s = args.n_attacker_labelFlipping
     #args.attacker_list_labelFlipping = np.random.permutation(list(range(n)))[:m]
@@ -57,9 +52,6 @@ def parse_args():
     
     m_m = args.n_attacker_multilabelFlipping
     args.attacker_list_multilabelFlipping = np.array([i for i in range(m_s+m_b,m_s+m_b+m_m)])
-
-    m = args.n_attacker_omniscient
-    args.attacker_list_omniscient = np.random.permutation(list(range(n)))[:m]
 
     if args.experiment_name == None:
         args.experiment_name = f"{args.loader_type}/{args.attacks}/{args.AR}"""
