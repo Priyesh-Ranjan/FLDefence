@@ -19,25 +19,26 @@ def transform(pattern, transform=None) :
     return trigger
 
 def add_pattern(pattern, transform=None):
-    if pattern == "square" :
+    if pattern == "sqr" :
         trigger = [[0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 0, 3], [0, 0, 4], 
                    [0, 4, 0], [0, 4, 1], [0, 4, 2], [0, 4, 3], [0, 4, 4], 
-                   [0, 1, 0], [0, 2, 0], [0, 3, 0], [0, 1, 4], [0, 2, 4], [0, 3, 4], ] 
+                   [0, 1, 0], [0, 2, 0], [0, 3, 0], [0, 1, 4], [0, 2, 4], 
+                   [0, 3, 4], ] 
     elif pattern == "hash" :
         trigger = [[0, 0, 1], [0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1], 
                    [0, 0, 3], [0, 1, 3], [0, 2, 3], [0, 3, 3], [0, 4, 3], 
                    [0, 1, 0], [0, 1, 1], [0, 1, 2], [0, 1, 3], [0, 1, 4], 
                    [0, 3, 0], [0, 3, 1], [0, 3, 2], [0, 3, 3], [0, 3, 4], ]
-    elif pattern == "cross" :
+    elif pattern == "cros" :
         trigger = [[0, 4, 4], [0, 3, 3], [0, 2, 2], [0, 1, 1], [0, 0, 0], 
                    [0, 2, 2], [0, 1, 3], [0, 0, 4], [0, 3, 1], [0, 4, 0], ]
     elif pattern == "plus" :
         trigger = [[0, 2, 0], [0, 2, 1], [0, 2, 2], [0, 2, 3], [0, 2, 4], 
                    [0, 0, 2], [0, 1, 2], [0, 2, 2], [0, 3, 2], [0, 4, 2], ]
-    elif pattern == "equal" :
+    elif pattern == "eql" :
         trigger = [[0, 0, 0], [0, 0, 1], [0, 0, 2], [0, 0, 3], [0, 0, 4], 
                    [0, 4, 0], [0, 4, 1], [0, 4, 2], [0, 4, 3], [0, 4, 4], ]
-    elif pattern == "parallel" :
+    elif pattern == "prl" :
         trigger = [[0, 0, 0], [0, 1, 0], [0, 2, 0], [0, 3, 0], [0, 4, 0], 
                    [0, 0, 4], [0, 1, 4], [0, 2, 4], [0, 3, 4], [0, 4, 4], ]
     return transform(trigger, transform) 
@@ -52,7 +53,11 @@ class Backdoor_Utils():
         for index in range(0, len(data)):
                 if torch.rand(1) < backdoor_fraction :
                         new_targets[index] = backdoor_label
-                        new_data[index] = self.add_backdoor_pixels(data[index], pattern, transform, magnitude)
+                        if type(pattern) == list :
+                            trigger = pattern[random.randint(0,len(pattern))]
+                            new_data[index] = self.add_backdoor_pixels(data[index], trigger, transform, magnitude)
+                        else :
+                            new_data[index] = self.add_backdoor_pixels(data[index], pattern, transform, magnitude)
                 else:
                     new_data[index] = data[index]
                     new_targets[index] = targets[index]

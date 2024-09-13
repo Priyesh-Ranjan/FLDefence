@@ -22,7 +22,7 @@ class Attacker_LF(Client):
     def data_transform(self, data, target, epoch):
         
         if epoch in self.interval:
-            target_ = torch.tensor(list(map(lambda x: self.flip[str(x)] if (str(x) in self.flip.keys() and random() <= self.PDR) else x, target)))
+            target_ = torch.tensor(list(map(lambda x: int(self.flip[str(x)]) if (str(x) in self.flip.keys() and random() <= self.PDR) else x, target)))
             assert target.shape == target_.shape, "Inconsistent target shape"
         else : 
             target_ = target
@@ -36,9 +36,9 @@ class Attacker_LF(Client):
             
         self.model.load_state_dict(deepcopy(newState))    
 
-class Attacker_Backdoor(Client):
+class Attacker_BD(Client):
     def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, label, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
-        super(Attacker_Backdoor, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
+        super(Attacker_BD, self).__init__(cid, model, dataLoader, optimizer, criterion, device, inner_epochs)
         self.utils = Backdoor_Utils()
         self.PDR = PDR
         self.scaling = scaling

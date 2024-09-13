@@ -41,7 +41,7 @@ class Server():
         self.emptyStates = states
 
     def attach(self, c):
-        self.clients.append(c)
+        self.clients = c
 
     def backdoor_testing(self):
         for i,c in enumerate(self.clients) :

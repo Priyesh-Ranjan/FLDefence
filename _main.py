@@ -68,8 +68,7 @@ def main(args):
         optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     client_list, labels = adversary_setup(model, trainData, optimizer, criterion, device, args.inner_epochs)
-    for c in client_list :
-        server.attach(c)
+    server.attach(client_list)
     server.set_clabels(labels)
     
     loss, accuracy = server.test()
