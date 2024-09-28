@@ -5,8 +5,8 @@ from clients_attackers import *
 ref = ["sqr","hash","cros","plus","eql","prl"]
 
 def label_flipping_params(args) :
-    sources = [int(i.strip()) for i in args.attacks.split("->")[0].split(",")]
-    targets = [int(i.strip()) for i in args.attacks.split("->")[1].split(",")]
+    sources = [int(i.strip()) for i in args.attack.split("->")[0].split(",")]
+    targets = [int(i.strip()) for i in args.attack.split("->")[1].split(",")]
     
     flip = {}
     
@@ -19,13 +19,13 @@ def backdoor_params(args) :
     target = args.attacks.split("->")[1].strip()  
     
     if args.backdoor == "central" :
-        trigger = args.attacks.split("->")[0].strip()
+        trigger = args.attack.split("->")[0].strip()
         pattern = [trigger]*args.num_clients
     if args.backdoor == "inter" :    
-        triggers = [int(i.strip()) for i in args.attacks.split("->")[0].split(",")]
+        triggers = [int(i.strip()) for i in args.attack.split("->")[0].split(",")]
         pattern = [triggers[int(i%len(triggers))] for i in range(args.num_clients)]
     if args.backdoor == "intra" :
-        triggers = triggers = [int(i.strip()) for i in args.attacks.split("->")[0].split(",")]
+        triggers = triggers = [int(i.strip()) for i in args.attack.split("->")[0].split(",")]
         pattern = [triggers for i in range(args.num_clients)]
     label = int(target)
     return pattern, label
