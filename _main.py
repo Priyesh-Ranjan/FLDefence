@@ -67,7 +67,7 @@ def main(args):
     elif args.optimizer == 'Adam':
         optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
-    client_list, labels = adversary_setup(model, trainData, optimizer, criterion, device, args.inner_epochs)
+    client_list, labels = adversary_setup(args, model, trainData, optimizer, criterion, device)
     server.attach(client_list)
     server.set_clabels(labels)
     
