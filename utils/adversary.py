@@ -30,7 +30,7 @@ def backdoor_params(args) :
     label = int(target)
     return pattern, label
 
-def adversary_setup(args, model, trainData, optimizer, criterion, device):    
+def adversary_setup(args, model, dataLoader, optimizer, criterion, device):    
 
     if args.type == 'LF':
         flip = label_flipping_params(args)
