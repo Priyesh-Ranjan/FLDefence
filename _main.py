@@ -28,28 +28,28 @@ def main(args):
 
     if args.dataset == 'mnist':
         from tasks import mnist
-        trainData = mnist.train_dataloader(args.num_clients, loader_type=args.loader_type, path=args.loader_path,
+        trainData = mnist.train_dataloader(args.num_clients, loader_type=args.loader_type,
                                            store=False)
         testData = mnist.test_dataloader(args.test_batch_size)
         Net = mnist.Net
         criterion = F.cross_entropy
     elif args.dataset == 'cifar':
         from tasks import cifar
-        trainData = cifar.train_dataloader(args.num_clients, loader_type=args.loader_type, path=args.loader_path,
+        trainData = cifar.train_dataloader(args.num_clients, loader_type=args.loader_type,
                                            store=False)
         testData = cifar.test_dataloader(args.test_batch_size)
         Net = cifar.Net
         criterion = F.cross_entropy
     elif args.dataset == 'cifar100':
         from tasks import cifar100
-        trainData = cifar100.train_dataloader(args.num_clients, loader_type=args.loader_type, path=args.loader_path,
+        trainData = cifar100.train_dataloader(args.num_clients, loader_type=args.loader_type,
                                               store=False)
         testData = cifar100.test_dataloader(args.test_batch_size)
         Net = cifar100.Net
         criterion = F.cross_entropy
     elif args.dataset == 'fmnist':
         from tasks import fmnist
-        trainData = fmnist.train_dataloader(args.num_clients, loader_type=args.loader_type, path=args.loader_path,
+        trainData = fmnist.train_dataloader(args.num_clients, loader_type=args.loader_type,
                                           store=False)
         testData = fmnist.test_dataloader(args.test_batch_size)
         Net = fmnist.Net

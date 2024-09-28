@@ -64,7 +64,7 @@ def basic_loader(num_clients, loader_type):
     return loader_type(num_clients, dataset)
 
 
-def train_dataloader(num_clients, loader_type='iid', store=True, path='./data/loader.pk'):
+def train_dataloader(num_clients, loader_type='iid', store=True):
     assert loader_type in ['iid', 'byLabel', 'dirichlet'], 'Loader has to be either \'iid\' or \'non_overlap_label \''
     if loader_type == 'iid':
         loader_type = iidLoader
