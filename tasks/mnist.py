@@ -50,7 +50,7 @@ class Net(nn.Module):
 
 
 def getDataset():
-    dataset = datasets.MNIST('./data/MNIST/raw',
+    dataset = datasets.MNIST('./data/MNIST/raw/',
                              train=True,
                              download=False,
                              transform=transforms.Compose([transforms.Resize((32, 32)),
@@ -91,7 +91,7 @@ def train_dataloader(num_clients, loader_type='iid', store=True):
 
 
 def test_dataloader(test_batch_size):
-    test_loader = torch.utils.data.DataLoader(datasets.MNIST('../data/MNIST/raw',train=False, download=False,
+    test_loader = torch.utils.data.DataLoader(datasets.MNIST('../data/MNIST/raw/',train=False, download=False,
                                                              transform=transforms.Compose(
                                                                  [transforms.Resize((32, 32)), transforms.ToTensor(),
                                                                   transforms.Normalize((0.1307,), (0.3081,))])),
