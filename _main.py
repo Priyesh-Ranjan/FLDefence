@@ -13,7 +13,7 @@ def main(args):
     print('#####################')
     print('#####################')
     print('#####################')
-    print(f'Aggregation Rule:\t{args.AR}\nData distribution:\t{args.loader_type}\nAttacks:\t{args.attacks} ')
+    #print(f'Aggregation Rule:\t{args.AR}\nData distribution:\t{args.loader_type}\nAttacks:\t{args.attacks} ')
     print('#####################')
     print('#####################')
     print('#####################')
