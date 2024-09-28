@@ -24,6 +24,8 @@ class Attacker_LF(Client):
         if epoch in self.interval:
             target_ = torch.tensor(list(map(lambda x: int(self.flip[str(x)]) if (str(x) in self.flip.keys() and random() <= self.PDR) else x, target)))
             assert target.shape == target_.shape, "Inconsistent target shape"
+            print(target)
+            print(target_)
         else : 
             target_ = target
         return data, target_

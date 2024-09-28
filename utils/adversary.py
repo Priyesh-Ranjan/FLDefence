@@ -56,4 +56,5 @@ def adversary_setup(args, model, trainData, optimizer, criterion, device):
             labels.append('N')
         client_list.append(client)
     
+    print(labels)
     return client_list, labels    
