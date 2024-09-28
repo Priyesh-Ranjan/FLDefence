@@ -33,7 +33,7 @@ class Client():
     def data_transform(self, data, target, epoch):
         return data, target
     
-    def scaling(self):
+    def multiply(self):
         pass
 
     def train(self, epoch):
@@ -54,7 +54,7 @@ class Client():
         
         self.isTrained = True
         self.model.cpu()  ## avoid occupying gpu when idle
-        self.scaling()
+        self.multiply()
 
     def test(self, testDataLoader):
         self.model.to(self.device)

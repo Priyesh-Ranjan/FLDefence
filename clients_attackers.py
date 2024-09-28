@@ -28,7 +28,7 @@ class Attacker_LF(Client):
             target_ = target
         return data, target_
     
-    def scaling(self):
+    def multiply(self):
         newState = self.model.state_dict()
         
         for param in newState:
@@ -55,7 +55,7 @@ class Attacker_BD(Client):
                                                    pattern=self.pattern, transform=self.transform, magnitude=self.magnitude)
         return data, target
     
-    def scaling(self):
+    def multiply(self):
         newState = self.model.state_dict()
         
         for param in newState:
