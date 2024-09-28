@@ -30,7 +30,7 @@ def backdoor_params(args) :
     label = int(target)
     return pattern, label
 
-def adversary_setup(args, model, dataLoader, optimizer, criterion, device):    
+def adversary_setup(args, model, trainData, optimizer, criterion, device):    
 
     if args.type == 'LF':
         flip = label_flipping_params(args)
@@ -46,10 +46,10 @@ def adversary_setup(args, model, dataLoader, optimizer, criterion, device):
     for i in range(args.num_clients):
         if i < args.scale :
             if args.type == 'LF':
-                client = Attacker_LF(i, args.PDR, args.scaling, interval, flip, model, dataLoader, optimizer, criterion, device, args.inner_epochs)
+                client = Attacker_LF(i, args.PDR, args.scaling, interval, flip, model, trainData[i], optimizer, criterion, device, args.inner_epochs)
                 labels.append('LF')
             elif args.type == 'BD':
-                client = Attacker_BD(i, args.PDR, args.scaling, interval, args.magnitude, pattern[i], args.pattern, label, model, dataLoader, optimizer, criterion, device, args.inner_epochs)
+                client = Attacker_BD(i, args.PDR, args.scaling, interval, args.magnitude, pattern[i], args.pattern, label, model, trainData[i], optimizer, criterion, device, args.inner_epochs)
                 labels.append('BD')
         else :    
             client = Client(i, model, trainData[i], optimizer, criterion, device, args.inner_epochs)
