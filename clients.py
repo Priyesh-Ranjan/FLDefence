@@ -33,7 +33,7 @@ class Client():
     def data_transform(self, data, target, epoch):
         return data, target
     
-    def multiply(self):
+    def multiply(self, epoch):
         pass
 
     def train(self, epoch):
@@ -51,7 +51,7 @@ class Client():
         
         self.isTrained = True
         self.model.cpu()
-        self.multiply()
+        self.multiply(epoch)
 
     def test(self, testDataLoader):
         self.model.to(self.device)
