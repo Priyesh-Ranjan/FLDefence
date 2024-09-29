@@ -27,6 +27,7 @@ class Attacker_LF(Client):
             print(target)
             print(self.flip['8'])
             target_ = torch.tensor(list(map(lambda x: int(self.flip[str(x)]) if (str(x) in self.flip.keys()) else x, target)))
+            print(torch.tensor(list(map(lambda x: True if (str(x) in self.flip.keys()) else False, target))))
             #target_ = torch.tensor(list(map(lambda x: 3 if (x in [8] and random() <= self.PDR) else x, target)))
             assert target.shape == target_.shape, "Inconsistent target shape"
             print(target)
