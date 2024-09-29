@@ -5,8 +5,8 @@ from clients_attackers import *
 ref = ["sqr","hash","cros","plus","eql","prl"]
 
 def label_flipping_params(args) :
-    sources = [int(i.strip()) for i in args.attack.split("->")[0].split(",")]
-    targets = [int(i.strip()) for i in args.attack.split("->")[1].split(",")]
+    sources = [i.strip() for i in args.attack.split("->")[0].split(",")]
+    targets = [i.strip() for i in args.attack.split("->")[1].split(",")]
     
     flip = {}
     

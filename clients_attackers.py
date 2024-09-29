@@ -22,7 +22,11 @@ class Attacker_LF(Client):
     def data_transform(self, data, target, epoch):
         
         if epoch in self.interval:
-            target_ = torch.tensor(list(map(lambda x: self.flip[x] if (x in self.flip.keys() and random() <= self.PDR) else x, target)))
+            print(self.flip)
+            print(self.flip.keys())
+            print(target)
+            print(self.flip['8'])
+            target_ = torch.tensor(list(map(lambda x: int(self.flip[str(x)]) if (str(x) in self.flip.keys() and random() <= self.PDR) else x, target)))
             #target_ = torch.tensor(list(map(lambda x: 3 if (x in [8] and random() <= self.PDR) else x, target)))
             assert target.shape == target_.shape, "Inconsistent target shape"
             print(target)
