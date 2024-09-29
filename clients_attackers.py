@@ -23,7 +23,7 @@ class Attacker_LF(Client):
         
         if epoch in self.interval:
             print(self.flip)
-            print(self.flip.keys())
+            print(list(self.flip.keys()))
             print(target)
             print(self.flip['8'])
             target_ = torch.tensor(list(map(lambda x: int(self.flip[str(x)]) if (str(x) in self.flip.keys()) else x, target)))
