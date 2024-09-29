@@ -85,7 +85,8 @@ class Server():
         test_loss /= count
         accuracy = 100. * correct / count
         print(conf.astype(int))
-        print(f1/c)
+        print("")
+        print("F1 Score = ", f1/c,"\n")
         self.model.cpu()  ## avoid occupying gpu when idle
         print(
             '[Server] Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(test_loss, correct, count, accuracy))
