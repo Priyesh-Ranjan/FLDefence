@@ -12,6 +12,8 @@ def label_flipping_params(args) :
     
     for i, val in enumerate(sources) :
         flip[val] = targets[i]
+        if args.label_flipping == "bi" :
+            flip[targets[i]] = val
     
     return flip    
     

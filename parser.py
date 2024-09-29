@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument("--end", nargs='?', type=int, default=None)
     parser.add_argument("--attack", type=str)
     parser.add_argument("--backdoor",nargs='?',type=str,choices=["central","intra","inter"], default="central")
-    parser.add_argument("--label_flipping",nargs='?',type=str,choices=["uni","bi"], default="bi")
+    parser.add_argument("--label_flipping",nargs='?',type=str,choices=["uni","bi"], default="uni")
     parser.add_argument("--pattern",nargs='?',type=str,default=None)
     parser.add_argument("--experiment_name", type=str)
     parser.add_argument("--device", type=str, choices=["cuda", "cpu"], default='cuda')
