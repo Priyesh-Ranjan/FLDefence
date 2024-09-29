@@ -28,11 +28,12 @@ class Attacker_LF(Client):
             target_ = target
         return data, target_
     
-    def multiply(self):
+    def multiply(self, epoch):
         newState = self.model.state_dict()
         
-        for param in newState:
-            newState[param] = self.scaling*(newState[param] - self.originalState[param]) + self.originalState[param]
+        if epoch in self.interval :
+            for param in newState:
+                newState[param] = self.scaling*(newState[param] - self.originalState[param]) + self.originalState[param]
             
         self.model.load_state_dict(deepcopy(newState))    
 
