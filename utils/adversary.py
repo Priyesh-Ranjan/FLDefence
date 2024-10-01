@@ -42,7 +42,7 @@ def adversary_setup(args, model, trainData, optimizer, criterion, device):
         print("Invalid attack")
         return None
     
-    interval = range(args.start, (lambda x: args.epochs if x == None else x)(args.end))
+    interval = range(args.start, (lambda x: args.epochs if x == None else x+1)(args.end))
     client_list = []; labels = []
     
     for i in range(args.num_clients):
