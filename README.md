@@ -1,4 +1,4 @@
-# dist_defence
+# FL_defence
 Defence against targeted attacks in Federated Learning
 
 ```
