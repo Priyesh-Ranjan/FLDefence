@@ -97,10 +97,11 @@ def main(args):
         server.train(group)
         #         server.train_concurrent(group)
 
-        loss, accuracy = server.test()
+        loss, accuracy, ASR = server.test()
 
         writer.add_scalar('test/loss', loss, steps)
         writer.add_scalar('test/accuracy', accuracy, steps)
+        writer.add_scalar('test/ASR', ASR, steps)
 
         if 'BD' in args.type.upper():
             if 'SEMANTIC' in args.attacks.upper():

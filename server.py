@@ -2,12 +2,12 @@ from __future__ import print_function
 
 from copy import deepcopy
 import pandas as pd
-from rules.correlations import C
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import f1_score
 import torch
 import torch.nn.functional as F
 import numpy as np
+from utils.LF_utils import find_ASR
 
 from utils import utils
 #from utils.backdoor_semantic_utils import SemanticBackdoor_Utils
@@ -33,6 +33,7 @@ class Server():
         self.path_to_aggNet = ""
         self.patterns = []
         self.label = None
+        self.flip = None
 
     def init_stateChange(self):
         states = deepcopy(self.model.state_dict())
@@ -50,6 +51,11 @@ class Server():
                 self.patterns.append(pattern)
         self.patterns = set(self.patterns)     
         self.label = label
+    
+    def LF_testing(self) :
+        for i,c in enumerate(self.clients) :
+            if self.c_labels[i] == 'LF' :
+                self.flip = c.return_params()
 
     def distribute(self):
         for c in self.clients:
@@ -65,8 +71,7 @@ class Server():
         test_loss = 0
         correct = 0
         count = 0
-        c = 0
-        f1 = 0
+        ASR_sum = 0; tot_sum = 0
         conf = np.zeros([10,10])
         with torch.no_grad():
             for data, target in self.dataLoader:
@@ -77,20 +82,20 @@ class Server():
                     pred = torch.round(torch.sigmoid(output))
                 else:
                     pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+                temp_1, temp_2 = find_ASR(target, pred, self.flip)
+                ASR_sum += temp_1; tot_sum += temp_2
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 count += pred.shape[0]
                 conf += confusion_matrix(target.cpu(),pred.cpu(), labels = [i for i in range(10)])
-                f1 += f1_score(target.cpu(), pred.cpu(), average = 'weighted')*count
-                c+=count
         test_loss /= count
         accuracy = 100. * correct / count
+        ASR = 1 - float(ASR_sum)/float(tot_sum)
         print(conf.astype(int))
         print("")
-        print("F1 Score = ", f1/c,"\n")
         self.model.cpu()  ## avoid occupying gpu when idle
         print(
             '[Server] Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(test_loss, correct, count, accuracy))
-        return test_loss, accuracy
+        return test_loss, accuracy, ASR
 
     def test_backdoor(self):
         print("[Server] Start testing backdoor\n")
