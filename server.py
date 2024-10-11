@@ -83,10 +83,7 @@ class Server():
                 else:
                     pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
                 temp_1, temp_2 = find_ASR(target, pred.view_as(target), self.flip)
-                print(target)
-                print(pred.view_as(target))
                 ASR_sum += temp_1; tot_sum += temp_2
-                print(ASR_sum, tot_sum)
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 count += pred.shape[0]
                 conf += confusion_matrix(target.cpu(),pred.cpu(), labels = [i for i in range(10)])
@@ -94,6 +91,7 @@ class Server():
         accuracy = 100. * correct / count
         ASR = (float(ASR_sum)/float(tot_sum))*100
         print("ASR: ", ASR)
+        print("")
         print(conf.astype(int))
         print("")
         self.model.cpu()  ## avoid occupying gpu when idle
