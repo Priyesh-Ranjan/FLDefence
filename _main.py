@@ -82,6 +82,8 @@ def main(args):
         else:
             server.backdoor_testing()
             loss, accuracy = server.test_backdoor()
+    elif 'LF' in args.type.upper():
+        server.LF_testing()        
 
         writer.add_scalar('test/loss_backdoor', loss, steps)
         writer.add_scalar('test/backdoor_success_rate', accuracy, steps)
