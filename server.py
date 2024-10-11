@@ -56,7 +56,6 @@ class Server():
         for i,c in enumerate(self.clients) :
             if self.c_labels[i] == 'LF' :
                 self.flip = c.return_params()
-                print(self.flip)
 
     def distribute(self):
         for c in self.clients:
@@ -90,7 +89,7 @@ class Server():
                 conf += confusion_matrix(target.cpu(),pred.cpu(), labels = [i for i in range(10)])
         test_loss /= count
         accuracy = 100. * correct / count
-        ASR = 1 - float(ASR_sum)/float(tot_sum)
+        ASR = (1 - float(ASR_sum)/float(tot_sum))*100
         print("ASR: ", ASR)
         print(conf.astype(int))
         print("")
