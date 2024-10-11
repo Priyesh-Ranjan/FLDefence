@@ -38,6 +38,8 @@ class Attacker_LF(Client):
         self.model.load_state_dict(deepcopy(newState))    
     
     def return_params(self) :
+        print([y for x,y in self.flip.items()])
+        print(list(self.flip.keys()))
         return set(list(self.flip.keys()).extend([y for x,y in self.flip.items()]))
 
 class Attacker_BD(Client):
