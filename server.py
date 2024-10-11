@@ -55,7 +55,7 @@ class Server():
     def LF_testing(self) :
         for i,c in enumerate(self.clients) :
             if self.c_labels[i] == 'LF' :
-                self.flip = c.return_params()
+                self.flip = list(c.return_params())
 
     def distribute(self):
         for c in self.clients:
@@ -84,6 +84,7 @@ class Server():
                     pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
                 temp_1, temp_2 = find_ASR(target, pred, self.flip)
                 ASR_sum += temp_1; tot_sum += temp_2
+                print(ASR_sum, tot_sum)
                 correct += pred.eq(target.view_as(pred)).sum().item()
                 count += pred.shape[0]
                 conf += confusion_matrix(target.cpu(),pred.cpu(), labels = [i for i in range(10)])

@@ -8,8 +8,6 @@ def find_ASR(tensor_1, tensor_2, numbers):
 
     count = 0
     tot = 0
-    match_tensor1 = torch.zeros_like(tensor_1, dtype=torch.bool)
-    match_tensor2 = torch.zeros_like(tensor_2, dtype=torch.bool)
     
     for num in numbers:
         match_tensor1 = (tensor_1 == num)
@@ -17,6 +15,5 @@ def find_ASR(tensor_1, tensor_2, numbers):
         matching_positions = (match_tensor1 & match_tensor2)
         count += torch.sum(matching_positions).item()
         tot += torch.sum(match_tensor1).item()
-    
     
     return count, tot
