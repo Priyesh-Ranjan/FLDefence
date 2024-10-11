@@ -38,7 +38,7 @@ class Attacker_LF(Client):
         self.model.load_state_dict(deepcopy(newState))    
     
     def return_params(self) :
-        return self.flip.keys().extend([self.flip[int(x)] for x in list(self.flip.keys())])
+        return set(list(self.flip.keys()).extend([self.flip[int(x)] for x in list(self.flip.keys())]))
 
 class Attacker_BD(Client):
     def __init__(self, cid, PDR, scaling, interval, magnitude, pattern, transform, label, model, dataLoader, optimizer, criterion=F.nll_loss, device='cpu', inner_epochs=1):
