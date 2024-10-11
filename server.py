@@ -91,6 +91,7 @@ class Server():
         test_loss /= count
         accuracy = 100. * correct / count
         ASR = 1 - float(ASR_sum)/float(tot_sum)
+        print("ASR: ", ASR)
         print(conf.astype(int))
         print("")
         self.model.cpu()  ## avoid occupying gpu when idle
