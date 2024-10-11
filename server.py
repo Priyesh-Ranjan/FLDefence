@@ -56,6 +56,7 @@ class Server():
         for i,c in enumerate(self.clients) :
             if self.c_labels[i] == 'LF' :
                 self.flip = c.return_params()
+                print(self.flip)
 
     def distribute(self):
         for c in self.clients:

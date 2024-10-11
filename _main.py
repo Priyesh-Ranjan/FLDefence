@@ -71,7 +71,7 @@ def main(args):
     server.attach(client_list)
     server.set_clabels(labels)
     
-    loss, accuracy = server.test()
+    loss, accuracy, ASR = server.test()
     steps = 0
     writer.add_scalar('test/loss', loss, steps)
     writer.add_scalar('test/accuracy', accuracy, steps)
