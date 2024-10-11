@@ -82,9 +82,9 @@ class Server():
                     pred = torch.round(torch.sigmoid(output))
                 else:
                     pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
-                temp_1, temp_2 = find_ASR(target, pred, self.flip)
+                temp_1, temp_2 = find_ASR(target, pred.view_as(target), self.flip)
                 print(target)
-                print(pred)
+                print(pred.view_as(target))
                 ASR_sum += temp_1; tot_sum += temp_2
                 print(ASR_sum, tot_sum)
                 correct += pred.eq(target.view_as(pred)).sum().item()
