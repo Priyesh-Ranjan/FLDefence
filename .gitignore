@@ -4,6 +4,7 @@ __pycache__/*
 tasks/__pycache__/*
 rules/__pycache__/*
 logs/*
+logs_2/*
 ```
 
 *.cpython-37.pyc
